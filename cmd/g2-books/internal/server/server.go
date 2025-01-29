@@ -5,6 +5,7 @@ import (
 	"github.com/RenzoFudo/g2books/cmd/g2-books/internal/domain/models"
 	"github.com/RenzoFudo/g2books/cmd/g2-books/internal/storage"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
@@ -38,9 +39,9 @@ func (s *Server) Run() error {
 	bookGroup := r.Group("/book")
 	{
 		bookGroup.GET("/all-book", s.AllBooksHandler)
-		bookGroup.GET("/:b-id", s.GetBookByIdHandler)
+		bookGroup.GET("/:id", s.GetBookByIdHandler)
 		bookGroup.POST("/add-book", s.SaveBookHandler)
-		bookGroup.DELETE("/delete-book", s.DeleteBookHandler)
+		bookGroup.DELETE("/delete/:id", s.DeleteBookHandler)
 	}
 	if err := r.Run(s.host); err != nil {
 		return err
@@ -91,7 +92,8 @@ func (s *Server) AllBooksHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, books)
 }
 func (s *Server) GetBookByIdHandler(ctx *gin.Context) {
-	bid := ctx.Param(":id")
+	bid := ctx.Param("id")
+	log.Println(bid)
 	book, err := s.storage.GetBookById(bid)
 	if err != nil {
 		if errors.Is(err, storage.ErrBookNotFound) {
@@ -117,7 +119,7 @@ func (s *Server) SaveBookHandler(ctx *gin.Context) {
 
 }
 func (s *Server) DeleteBookHandler(ctx *gin.Context) {
-	bid := ctx.Param(":id")
+	bid := ctx.Param("id")
 	if err := s.storage.DeleteBook(bid); err != nil {
 		if errors.Is(err, storage.ErrBookNotFound) {
 			ctx.String(http.StatusNoContent, err.Error())

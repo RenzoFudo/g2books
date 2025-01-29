@@ -3,6 +3,7 @@ package storage
 import (
 	"github.com/RenzoFudo/g2books/cmd/g2-books/internal/domain/models"
 	"github.com/google/uuid"
+	"log"
 )
 
 type MemStorage struct {
@@ -37,7 +38,9 @@ func (ms *MemStorage) ValidateUser(user models.User) (string, error) {
 }
 func (ms *MemStorage) GetBooks() ([]models.Book, error) {
 	var books []models.Book
-	for _, book := range ms.booksMap {
+	for bid, value := range ms.booksMap {
+		book := value
+		book.BID = bid
 		books = append(books, book)
 	}
 	if len(books) == 0 {
@@ -46,6 +49,10 @@ func (ms *MemStorage) GetBooks() ([]models.Book, error) {
 	return books, nil
 }
 func (ms *MemStorage) GetBookById(bid string) (models.Book, error) {
+	log.Printf("BID: %s/n", bid)
+	for _, val := range ms.booksMap {
+		log.Println(val.Lable, val.BID)
+	}
 	book, ok := ms.booksMap[bid]
 	if !ok {
 		return models.Book{}, ErrBookNotFound
