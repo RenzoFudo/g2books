@@ -32,7 +32,7 @@ func (s *Server) Run() error {
 	r := gin.Default()
 	userGroup := r.Group("/user")
 	{
-		userGroup.GET("/register", s.RegisterHandler)
+		userGroup.POST("/register", s.RegisterHandler)
 		userGroup.POST("/auth", s.AuthHandler)
 		userGroup.POST("/")
 	}
