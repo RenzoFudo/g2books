@@ -4,11 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"time"
+
 	"github.com/RenzoFudo/g2books/cmd/g2-books/internal/domain/models"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"time"
 )
 
 const ctxTimeout = time.Second * 2
@@ -114,4 +119,21 @@ func (r *Repository) DeleteBook(BID string) error {
 		return err
 	}
 	return tx.Commit(ctx)
+}
+
+func Migrations(dbAddr, migrationPath string) error {
+	migratePath := fmt.Sprintf("file://%s", migrationPath)
+	m, err := migrate.New(migratePath, dbAddr)
+	if err != nil {
+		return err
+	}
+	if err := m.Up(); err != nil {
+		if errors.Is(err, migrate.ErrNoChange) {
+			log.Printf("No migrations apply") //миграция не внесла не каких изменений
+			return nil
+		}
+		return err
+	}
+	log.Println("Migrations complete") //миграция была успешно выполнена
+	return nil
 }

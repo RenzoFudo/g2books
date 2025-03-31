@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS Users (
+    uid VARCHAR(36) PRIMARY KEY,
+    Name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    pass TEXT NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS email_id ON Users (email);
+
+CREATE TABLE IF NOT EXISTS Books (
+    bid VARCHAR(36) PRIMARY KEY,
+    Lable TEXT NOT NULL,
+    Author TEXT NOT NULL
+    uid VARCHAR(36) NOT NULL,
+
+);
+
+
